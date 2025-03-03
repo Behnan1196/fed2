@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            flex: 1;
+            height: 100%;
+        }
+
+        /* Sidebar (Aside) */
+        aside {
+            width: 350px;
+            background: #f8f9fa;
+            border-right: 2px solid #ddd;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 20px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h2>My Application</h2>
+        <button onclick="loadChat()">Open Chat</button>
+    </header>
+
+    <!-- Layout -->
+    <div class="container">
+        <!-- Sidebar (Chat Area) -->
+        <aside id="chatContainer">
+            <p>Click "Open Chat" to start a conversation.</p>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <h3>Welcome to the App</h3>
+            <p>This is the main content area. Your chat will load in the sidebar.</p>
+        </main>
+    </div>
+
+    <script>
+        function loadChat() {
+            const chatUrl = "http://localhost:3000/chat?user1=ali&user2=hasan";
+            const chatContainer = document.getElementById("chatContainer");
+
+            // Replace content with an iframe
+            chatContainer.innerHTML = `<iframe  
+            allow="camera; microphone; fullscreen" 
+            src="${chatUrl}"
+            sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+            </iframe>`;
+        }
+    </script>
+
+</body>
+</html>
