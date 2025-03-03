@@ -10,12 +10,14 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { Channel as StreamChannel } from "stream-chat";
 import { Call } from "@stream-io/video-react-sdk";
 
+// Update interface to accept callId as a prop
 interface ChatBoxProps {
   user1: string;
   user2: string;
+  callId: string; // Added callId
 }
 
-const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2 }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2, callId }) => {
   const [client, setClient] = useState<StreamChat | null>(null);
   const [channel, setChannel] = useState<StreamChannel | null>(null);
   const [videoClient, setVideoClient] = useState<StreamVideoClient | null>(null);
@@ -69,7 +71,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2 }) => {
   const startCall = async () => {
     if (!videoClient) return;
 
-    const callId = `${user1}-${user2}-call`;
+    // Use the passed callId
     const newCall = videoClient.call("default", callId);
     await newCall.join({ create: true });
 
