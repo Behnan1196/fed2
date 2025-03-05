@@ -5,30 +5,23 @@ import { StreamChat } from "stream-chat";
 import { Chat, Channel, Window, MessageList, MessageInput } from "stream-chat-react";
 import "stream-chat-react/dist/css/v2/index.css";
 
-import { StreamVideoClient, StreamCall, CallControls, StreamTheme, SpeakerLayout } from "@stream-io/video-react-sdk";
-import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { Channel as StreamChannel } from "stream-chat";
-import { Call } from "@stream-io/video-react-sdk";
 
-// Update interface to accept callId as a prop
 interface ChatBoxProps {
   user1: string;
   user2: string;
-  callId: string; // Added callId
+  callId: string; // Ensure this is here
 }
 
-const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2, callId }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2 }) => {
   const [client, setClient] = useState<StreamChat | null>(null);
   const [channel, setChannel] = useState<StreamChannel | null>(null);
-  const [videoClient, setVideoClient] = useState<StreamVideoClient | null>(null);
-  const [call, setCall] = useState<Call | null>(null);
 
   const API_KEY = process.env.NEXT_PUBLIC_STREAM_API_KEY || "";
 
   useEffect(() => {
     if (!API_KEY) return;
     const chatClient = new StreamChat(API_KEY);
-    const videoClient = new StreamVideoClient({ apiKey: API_KEY });
 
     const fetchToken = async (userId: string) => {
       try {
@@ -41,14 +34,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2, callId }) => {
       }
     };
 
-    const initClients = async () => {
+    const initClient = async () => {
       const token = await fetchToken(user1);
       if (!token) return;
 
       await chatClient.connectUser({ id: user1, name: user1 }, token);
-      await videoClient.connectUser({ id: user1, name: user1 }, token);
 
-      // Create or join chat
       const conversation = chatClient.channel("messaging", {
         members: [user1, user2],
       });
@@ -57,26 +48,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2, callId }) => {
       setChannel(conversation);
 
       setClient(chatClient);
-      setVideoClient(videoClient);
     };
 
-    initClients();
+    initClient();
 
     return () => {
       chatClient.disconnectUser();
-      videoClient.disconnectUser();
     };
-  }, [API_KEY, user1, user2]);  // ✅ Include API_KEY
-
-  const startCall = async () => {
-    if (!videoClient) return;
-
-    // Use the passed callId
-    const newCall = videoClient.call("default", callId);
-    await newCall.join({ create: true });
-
-    setCall(newCall);
-  };
+  }, [API_KEY, user1, user2]);
 
   if (!client || !channel) return <p>Loading Chat...</p>;
 
@@ -88,24 +67,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ user1, user2, callId }) => {
           <MessageInput />
         </Window>
       </Channel>
-
-      {/* Start Video Call Button */}
-      <button 
-        onClick={startCall} 
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        Start Video Call
-      </button>
-
-      {/* Video Call Section */}
-      {call && (
-        <StreamCall call={call}>
-          <StreamTheme>
-            <SpeakerLayout participantsBarPosition="bottom" />
-            <CallControls />
-          </StreamTheme>
-        </StreamCall>
-      )}
     </Chat>
   );
 };
